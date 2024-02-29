@@ -44,25 +44,45 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MarksAnalyze()
+                    MarksPresenter()
                 }
             }
         }
     }
 }
 
+fun marksAnalyzer(marks: Int): String {
+    return if (marks >= 75) {
+        "a"
+    }else if (marks >= 55){
+        "b"
+    }else if (marks >= 35){
+        "c"
+    }else if (marks >= 20){
+        "s"
+    }else {
+        "f"
+    }
+}
+
 @Composable
-fun MarksAnalyze(){
+fun MarksPresenter(){
     var add by remember { mutableStateOf(true) }
-    var marks by remember { mutableStateOf("") }
-    var aMarks by remember { mutableStateOf("") }
-    var bMarks by remember { mutableStateOf("") }
-    var cMarks by remember { mutableStateOf("") }
-    var sMarks by remember { mutableStateOf("") }
-    var fMarks by remember { mutableStateOf("") }
+    var marks by remember { mutableIntStateOf(0) }
+    var aMarks by remember { mutableIntStateOf(0) }
+    var bMarks by remember { mutableIntStateOf(0) }
+    var cMarks by remember { mutableIntStateOf(0) }
+    var sMarks by remember { mutableIntStateOf(0) }
+    var fMarks by remember { mutableIntStateOf(0) }
 
     Column(
         modifier = Modifier
+            .animateContentSize(
+                animationSpec = tween(
+                    durationMillis = 300,
+                    easing = LinearOutSlowInEasing
+                )
+            )
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -78,20 +98,14 @@ fun MarksAnalyze(){
         while(add) {
             Row(
                 modifier = Modifier
-                    .animateContentSize(
-                        animationSpec = tween(
-                            durationMillis = 400,
-                            easing = LinearOutSlowInEasing
-                        )
-                    )
                     .padding(
                         top = 15.dp,
                         bottom = 15.dp
                     )
             ){
                 OutlinedTextField(
-                    value = marks,
-                    onValueChange = {marks = it},
+                    value = marks.toString(),
+                    onValueChange = {marks = it.toInt()},
                     placeholder = { Text(text = "Type marks here ...")},
                     label = { Text(text = "Marks")},
                     singleLine = true,
@@ -119,23 +133,22 @@ fun MarksAnalyze(){
                     imageVector = Icons.Default.Add,
                     contentDescription = "Add_Icon"
                 )
-
-                if (marks.toInt() >= 20){
-                    sMarks += 1
-                }else{
-                    if(marks.toInt() >= 35){
-                        cMarks += 1
-                    }else {
-                        if (marks.toInt() >= 55){
-                            bMarks += 1
-                        }else {
-                            if (marks.toInt() >= 75){
-                                aMarks += 1
-                            }else {
-                                fMarks += 1
-                            }
-                        }
-                    }
+            }
+            when (marksAnalyzer(marks)) {
+                "a" -> {
+                    aMarks ++
+                }
+                "b" -> {
+                    bMarks ++
+                }
+                "c" -> {
+                    cMarks ++
+                }
+                "s" -> {
+                    sMarks ++
+                }
+                else -> {
+                    fMarks ++
                 }
             }
         }
@@ -177,6 +190,6 @@ fun MarksAnalyze(){
 @Composable
 fun BirthdayCardPreview() {
     TutorialTheme {
-        MarksAnalyze()
+        MarksPresenter()
     }
 }
